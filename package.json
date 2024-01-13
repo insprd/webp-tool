@@ -1,0 +1,30 @@
+{
+  "name": "webp-tool",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000 --hostname 0.0.0.0",
+    "build": "next build",
+    "start": "next start --port 3000 --hostname 0.0.0.0",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "formidable": "^1.2.2",
+    "next": "^14.0.1",
+    "react": "^18.2.0",
+    "react-dom": "18.2.0",
+    "sharp": "^0.33.2",
+    "tailwindcss": "^3.3.5",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/formidable": "^3.4.5",
+    "@types/node": "^20.8.10",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "@types/uuid": "^9.0.7",
+    "eslint": "^8.44.0",
+    "eslint-config-next": "^14.0.1",
+    "typescript": "^5.1.6"
+  }
+}
