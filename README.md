@@ -1,14 +1,16 @@
 # WebP Image Converter Application
 
-Welcome to the WebP Image Converter Application built with Next.js and TypeScript. This application allows users to convert their JPG and PNG images to the WebP format, which is known for providing superior lossless and lossy compression for web images.
+Welcome to the WebP Image Converter Application built with Next.js and TypeScript. This application allows users to convert their JPG and PNG images to the WebP format using a lossless conversion method. Notably, the ICC metadata is preserved during conversion, ensuring that images with HDR or Display P3 data maintain their color accuracy and quality in the converted WebP image.
 
 ## Application Features
 
-- **File Upload**: Users can upload images in JPG or PNG formats either by dragging and dropping the file into the upload area or by clicking the upload area to select a file from their computer.
-- **Metadata Display**: Once an image is uploaded, the application displays the image's metadata including name, size, type, last modified date, and ICC profile (if available).
-- **Image Preview**: Users can preview the uploaded image before conversion.
-- **Conversion to WebP**: With a simple click, users can convert their uploaded image to the WebP format.
-- **Download**: After conversion, users can download the converted WebP image.
+- **File Upload**: Users can upload images in JPG or PNG formats by dragging and dropping the file into the upload area or by clicking to select a file from their computer.
+- **ICC Metadata Preservation**: The converter retains the ICC profile metadata, so features like HDR and Display P3 are preserved.
+- **Lossless Conversion**: Images are converted to WebP format using a lossless method to ensure the highest quality.
+- **Metadata Display**: The application displays image metadata including name, size, type, last modified date, and ICC profile if available.
+- **Image Preview**: Users can preview the uploaded image before starting the conversion process.
+- **Conversion to WebP**: Users can convert their uploaded images to the WebP format with a simple click.
+- **Download**: Users can download the converted WebP images after the conversion is complete.
 
 ## Getting Started
 
