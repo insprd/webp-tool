@@ -8,6 +8,8 @@ interface FileMetadata {
   size: number;
   type: string;
   lastModified: string;
+  iccProfile?: string;
+  iccProfileDescription?: string;
 }
 
 const Home: NextPage = () => {
@@ -19,14 +21,41 @@ const Home: NextPage = () => {
     useState<string>("image.webp");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const getIccProfile = async (file: File): Promise<{
+    base64: string | undefined;
+    description: string | undefined;
+  }> => {
+    const formData = new FormData();
+    formData.append("image", file);
+    try {
+      const res = await fetch("/api/read-icc", {
+        method: "POST",
+        body: formData,
+      });
+      if (res.ok) {
+        const jsonResponse = await res.json();
+        return {
+          base64: jsonResponse.iccProfileBase64,
+          description: jsonResponse.iccProfileDescription
+        };
+      }
+    } catch (error) {
+      console.error("Failed to read ICC Profile:", error);
+    }
+    return { base64: undefined, description: undefined };
+  };
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      const iccData = await getIccProfile(file);
       const metadata: FileMetadata = {
         name: file.name,
         size: file.size,
         type: file.type,
         lastModified: new Date(file.lastModified).toLocaleDateString(),
+        iccProfile: iccData.base64,
+        iccProfileDescription: iccData.description
       };
       setSelectedFile(file);
       setFileMetadata(metadata);
@@ -121,6 +150,14 @@ const Home: NextPage = () => {
               <tr>
                 <th>Last Modified:</th>
                 <td>{fileMetadata?.lastModified}</td>
+              </tr>
+              <tr>
+                <th>ICC Profile:</th>
+                <td>{fileMetadata?.iccProfile ? 'Available' : 'None'}</td>
+              </tr>
+              <tr>
+                <th>ICC Profile Description:</th>
+                <td>{fileMetadata?.iccProfileDescription || 'None'}</td>
               </tr>
             </tbody>
           </table>
