@@ -5,7 +5,7 @@ import styles from "../styles/Home.module.css";
 
 interface FileMetadata {
   name: string;
-  size: number;
+  size: number; // Size in bytes
   type: string;
   lastModified: string;
   iccProfile?: string;
@@ -21,6 +21,14 @@ const Home: NextPage = () => {
   const [downloadFileName, setDownloadFileName] =
     useState<string>("image.webp");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Additional function to format file size
+  const formatFileSize = (size: number): string => {
+    if (size < 1024) return size + ' bytes';
+    else if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
+    else if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024).toFixed(1) + ' MB';
+    return (size / 1024 / 1024 / 1024).toFixed(1) + 'GB';
+  };
 
   const getIccProfile = async (file: File): Promise<{
     base64: string | undefined;
@@ -127,7 +135,6 @@ const Home: NextPage = () => {
             ref={fileInputRef}
           />
 
-          {/* Display loading message outside of the condition for selected file */}
           {isMetadataLoading && <p>Loading metadata...</p>}
 
           {selectedFile && (
@@ -136,7 +143,6 @@ const Home: NextPage = () => {
                 Clear
               </button>
 
-              {/* Check to avoid showing the table and the loading message at the same time */}
               {!isMetadataLoading && fileMetadata && (
                 <table className={styles.metadataTable}>
                   <tbody>
@@ -146,24 +152,22 @@ const Home: NextPage = () => {
                     </tr>
                     <tr>
                       <th>Size:</th>
-                      <td>{fileMetadata.size} bytes</td>
+                      <td>{formatFileSize(fileMetadata.size)}</td>
                     </tr>
                     <tr>
                       <th>Type:</th>
                       <td>{fileMetadata.type}</td>
                     </tr>
                     <tr>
-                      <th>Last Modified:</th>
+                      <th>Modified:</th>
                       <td>{fileMetadata.lastModified}</td>
                     </tr>
-                    <tr>
-                      <th>ICC Profile:</th>
-                      <td>{fileMetadata.iccProfile ? 'Available' : 'None'}</td>
-                    </tr>
-                    <tr>
-                      <th>ICC Profile Description:</th>
-                      <td>{fileMetadata.iccProfileDescription || 'None'}</td>
-                    </tr>
+                    {fileMetadata.iccProfile && (
+                      <tr>
+                        <th>ICC Profile:</th>
+                        <td>{fileMetadata.iccProfileDescription || 'None'}</td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               )}
