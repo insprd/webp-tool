@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useRef } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
@@ -14,6 +14,20 @@ const Home: NextPage = () => {
       setSelectedFile(event.target.files[0]);
     } else {
       setSelectedFile(null);
+    }
+  };
+
+  // Create a ref for the file input
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // New function to clear the selected file
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    setWebpUrl(null); // Also clear the webp URL if it was set
+
+    // Reset the input file
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -61,7 +75,14 @@ const Home: NextPage = () => {
             accept=".jpg, .jpeg, .png"
             onChange={handleFileChange}
             className={styles.inputFile}
+            ref={fileInputRef}
           />
+
+          {selectedFile && (
+            <button onClick={clearSelectedFile} className={styles.clearButton}>
+              Clear
+            </button>
+          )}
 
           <button onClick={convertToWebp} className={styles.convertButton}>
             Convert to WebP
