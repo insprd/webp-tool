@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useRef } from "react";
+import { useState, ChangeEvent, useRef, DragEvent } from "react";
 import { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
@@ -14,6 +14,7 @@ interface FileMetadata {
 
 const Home: NextPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [fileMetadata, setFileMetadata] = useState<FileMetadata | null>(null);
   const [isMetadataLoading, setIsMetadataLoading] = useState<boolean>(false); // Loading state for metadata
   const [webpUrl, setWebpUrl] = useState<string | null>(null);
@@ -21,6 +22,24 @@ const Home: NextPage = () => {
   const [downloadFileName, setDownloadFileName] =
     useState<string>("image.webp");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+  const handleDrop = (event: DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    if (event.dataTransfer.files && event.dataTransfer.files[0]) {
+      handleFileChange({
+        target: { files: event.dataTransfer.files },
+      } as ChangeEvent<HTMLInputElement>);
+    }
+  };
+
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   const formatFileSize = (size: number): string => {
     if (size < 1024) return size + " bytes";
@@ -60,6 +79,12 @@ const Home: NextPage = () => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
       setSelectedFile(file);
+
+      const imageFile = event.target.files[0];
+      // Create a preview URL for the selected file
+      const previewUrl = URL.createObjectURL(imageFile);
+      setImagePreview(previewUrl); // Save the preview URL in the state
+      
       setIsMetadataLoading(true); // Start loading metadata
       const iccData = await getIccProfile(file);
       const metadata: FileMetadata = {
@@ -79,6 +104,11 @@ const Home: NextPage = () => {
   };
 
   const clearSelectedFile = () => {
+    // Before clearing the selected file, revoke the object URL to avoid memory leaks
+    if (imagePreview) {
+      URL.revokeObjectURL(imagePreview);
+      setImagePreview(null);
+    }
     setSelectedFile(null);
     setWebpUrl(null);
     setFileMetadata(null); // Clear the metadata as well
@@ -129,18 +159,33 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>Lossless webp converter</h1>
         <div className={styles.uploadSection}>
-          <input
-            type="file"
-            accept=".jpg, .jpeg, .png"
-            onChange={handleFileChange}
-            className={styles.inputFile}
-            ref={fileInputRef}
-          />
+          <div
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+            onClick={triggerFileInput} // Add onClick event here to trigger file selection
+            className={styles.uploadSection}
+          >
+            <div className={styles.dropZone}>
+              Drag and drop your file here or click to select a file
+            </div>
+
+            <input
+              type="file"
+              accept=".jpg, .jpeg, .png"
+              onChange={handleFileChange}
+              className={styles.inputFile}
+              ref={fileInputRef}
+              style={{ display: "none" }} // Hide the file input, but keep it in DOM for accessibility
+            />
+          </div>
 
           {isMetadataLoading && <p>Loading metadata...</p>}
 
           {selectedFile && (
             <>
+              <div className={styles.previewContainer}>
+                {imagePreview && <img src={imagePreview} alt="Preview" className={styles.imagePreview} />}
+              </div>
               <button
                 onClick={clearSelectedFile}
                 className={styles.clearButton}
@@ -179,13 +224,16 @@ const Home: NextPage = () => {
             </>
           )}
 
-          <button
-            onClick={convertToWebp}
-            className={styles.convertButton}
-            disabled={isLoading}
-          >
-            {isLoading ? "Converting..." : "Convert to WebP"}
-          </button>
+          {/* Conditionally render the 'Convert to WebP' button */}
+          {selectedFile && (
+            <button
+              onClick={convertToWebp}
+              className={styles.convertButton}
+              disabled={isLoading}
+            >
+              {isLoading ? "Converting..." : "Convert to WebP"}
+            </button>
+          )}
         </div>
         {webpUrl && (
           <div className={styles.downloadSection}>
