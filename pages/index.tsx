@@ -22,15 +22,17 @@ const Home: NextPage = () => {
     useState<string>("image.webp");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Additional function to format file size
   const formatFileSize = (size: number): string => {
-    if (size < 1024) return size + ' bytes';
-    else if (size < 1024 * 1024) return (size / 1024).toFixed(1) + ' KB';
-    else if (size < 1024 * 1024 * 1024) return (size / 1024 / 1024).toFixed(1) + ' MB';
-    return (size / 1024 / 1024 / 1024).toFixed(1) + 'GB';
+    if (size < 1024) return size + " bytes";
+    else if (size < 1024 * 1024) return (size / 1024).toFixed(1) + " KB";
+    else if (size < 1024 * 1024 * 1024)
+      return (size / 1024 / 1024).toFixed(1) + " MB";
+    return (size / 1024 / 1024 / 1024).toFixed(1) + "GB";
   };
 
-  const getIccProfile = async (file: File): Promise<{
+  const getIccProfile = async (
+    file: File,
+  ): Promise<{
     base64: string | undefined;
     description: string | undefined;
   }> => {
@@ -45,7 +47,7 @@ const Home: NextPage = () => {
         const jsonResponse = await res.json();
         return {
           base64: jsonResponse.iccProfileBase64,
-          description: jsonResponse.iccProfileDescription
+          description: jsonResponse.iccProfileDescription,
         };
       }
     } catch (error) {
@@ -66,7 +68,7 @@ const Home: NextPage = () => {
         type: file.type,
         lastModified: new Date(file.lastModified).toLocaleDateString(),
         iccProfile: iccData.base64,
-        iccProfileDescription: iccData.description
+        iccProfileDescription: iccData.description,
       };
       setFileMetadata(metadata);
       setIsMetadataLoading(false); // End loading metadata
@@ -82,7 +84,7 @@ const Home: NextPage = () => {
     setFileMetadata(null); // Clear the metadata as well
     setIsMetadataLoading(false); // Clear the metadata loading state
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -139,7 +141,10 @@ const Home: NextPage = () => {
 
           {selectedFile && (
             <>
-              <button onClick={clearSelectedFile} className={styles.clearButton}>
+              <button
+                onClick={clearSelectedFile}
+                className={styles.clearButton}
+              >
                 Clear
               </button>
 
@@ -165,7 +170,7 @@ const Home: NextPage = () => {
                     {fileMetadata.iccProfile && (
                       <tr>
                         <th>ICC Profile:</th>
-                        <td>{fileMetadata.iccProfileDescription || 'None'}</td>
+                        <td>{fileMetadata.iccProfileDescription || "None"}</td>
                       </tr>
                     )}
                   </tbody>
@@ -174,8 +179,12 @@ const Home: NextPage = () => {
             </>
           )}
 
-          <button onClick={convertToWebp} className={styles.convertButton} disabled={isLoading}>
-            {isLoading ? 'Converting...' : 'Convert to WebP'}
+          <button
+            onClick={convertToWebp}
+            className={styles.convertButton}
+            disabled={isLoading}
+          >
+            {isLoading ? "Converting..." : "Convert to WebP"}
           </button>
         </div>
         {webpUrl && (

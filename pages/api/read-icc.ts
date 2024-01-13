@@ -3,7 +3,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import sharp from "sharp";
-import { parse } from 'icc';
+import { parse } from "icc";
 
 export const config = {
   api: {
@@ -36,17 +36,17 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       if (metadata.icc) {
         // Convert the ICC Buffer to base64.
-        iccProfileBase64 = Buffer.from(metadata.icc).toString('base64');
+        iccProfileBase64 = Buffer.from(metadata.icc).toString("base64");
         // Parse the ICC profile buffer to get a description.
         const iccProfile = parse(metadata.icc);
-        iccProfileDescription = iccProfile?.description || 'Description not available';
+        iccProfileDescription =
+          iccProfile?.description || "Description not available";
       }
 
       res.status(200).json({
         iccProfileBase64,
         iccProfileDescription,
       });
-
     } catch (error) {
       console.error("Failed to fetch ICC Profile:", error);
       res.status(500).json({ error: "Failed to read ICC Profile" });
