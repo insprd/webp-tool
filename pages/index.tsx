@@ -199,7 +199,7 @@ const Home: NextPage = () => {
           </div>
         )}
       </main>
-      <footer className={styles.footer}>Matt Legrand</footer>
+      <footer className={styles.footer}></footer>
     </div>
   );
 };
