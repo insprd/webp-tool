@@ -3,36 +3,53 @@ import { NextPage } from "next";
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 
+interface FileMetadata {
+  name: string;
+  size: number;
+  type: string;
+  lastModified: string;
+}
+
 const Home: NextPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [fileMetadata, setFileMetadata] = useState<FileMetadata | null>(null);
   const [webpUrl, setWebpUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [downloadFileName, setDownloadFileName] =
     useState<string>("image.webp");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      const metadata: FileMetadata = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: new Date(file.lastModified).toLocaleDateString(),
+      };
+      setSelectedFile(file);
+      setFileMetadata(metadata);
     } else {
       setSelectedFile(null);
+      setFileMetadata(null);
     }
   };
+  
 
-  // Create a ref for the file input
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // New function to clear the selected file
   const clearSelectedFile = () => {
     setSelectedFile(null);
-    setWebpUrl(null); // Also clear the webp URL if it was set
-
-    // Reset the input file
+    setWebpUrl(null);
+    setFileMetadata(null); // Clear the metadata as well
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
+
   const convertToWebp = async () => {
     if (selectedFile) {
+      setIsLoading(true); // start loading
       const formData = new FormData();
       formData.append("image", selectedFile);
 
@@ -57,6 +74,8 @@ const Home: NextPage = () => {
         }
       } catch (error) {
         console.error("Fetch error: ", error);
+      } finally {
+        setIsLoading(false); // End loading
       }
     }
   };
@@ -79,13 +98,37 @@ const Home: NextPage = () => {
           />
 
           {selectedFile && (
+      <>
             <button onClick={clearSelectedFile} className={styles.clearButton}>
               Clear
             </button>
+
+        {/* Table displaying file metadata */}
+          <table className={styles.metadataTable}>
+            <tbody>
+              <tr>
+                <th>Name:</th>
+                <td>{fileMetadata?.name}</td>
+              </tr>
+              <tr>
+                <th>Size:</th>
+                <td>{fileMetadata?.size} bytes</td>
+              </tr>
+              <tr>
+                <th>Type:</th>
+                <td>{fileMetadata?.type}</td>
+              </tr>
+              <tr>
+                <th>Last Modified:</th>
+                <td>{fileMetadata?.lastModified}</td>
+              </tr>
+            </tbody>
+          </table>
+        </>
           )}
 
-          <button onClick={convertToWebp} className={styles.convertButton}>
-            Convert to WebP
+          <button onClick={convertToWebp} className={styles.convertButton} disabled={isLoading}>
+            {isLoading ? 'Converting...' : 'Convert to WebP'}
           </button>
         </div>
         {webpUrl && (
