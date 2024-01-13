@@ -15,6 +15,7 @@ interface FileMetadata {
 const Home: NextPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileMetadata, setFileMetadata] = useState<FileMetadata | null>(null);
+  const [isMetadataLoading, setIsMetadataLoading] = useState<boolean>(false); // Loading state for metadata
   const [webpUrl, setWebpUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [downloadFileName, setDownloadFileName] =
@@ -48,6 +49,8 @@ const Home: NextPage = () => {
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
+      setSelectedFile(file);
+      setIsMetadataLoading(true); // Start loading metadata
       const iccData = await getIccProfile(file);
       const metadata: FileMetadata = {
         name: file.name,
@@ -57,24 +60,23 @@ const Home: NextPage = () => {
         iccProfile: iccData.base64,
         iccProfileDescription: iccData.description
       };
-      setSelectedFile(file);
       setFileMetadata(metadata);
+      setIsMetadataLoading(false); // End loading metadata
     } else {
       setSelectedFile(null);
       setFileMetadata(null);
     }
   };
-  
 
   const clearSelectedFile = () => {
     setSelectedFile(null);
     setWebpUrl(null);
     setFileMetadata(null); // Clear the metadata as well
+    setIsMetadataLoading(false); // Clear the metadata loading state
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
-
 
   const convertToWebp = async () => {
     if (selectedFile) {
@@ -98,7 +100,6 @@ const Home: NextPage = () => {
             .join(".");
           setDownloadFileName(`${fileBaseName}.webp`);
         } else {
-          // Improved error logging
           console.error("Conversion failed: ", await response.text());
         }
       } catch (error) {
@@ -126,42 +127,47 @@ const Home: NextPage = () => {
             ref={fileInputRef}
           />
 
-          {selectedFile && (
-      <>
-            <button onClick={clearSelectedFile} className={styles.clearButton}>
-              Clear
-            </button>
+          {/* Display loading message outside of the condition for selected file */}
+          {isMetadataLoading && <p>Loading metadata...</p>}
 
-        {/* Table displaying file metadata */}
-          <table className={styles.metadataTable}>
-            <tbody>
-              <tr>
-                <th>Name:</th>
-                <td>{fileMetadata?.name}</td>
-              </tr>
-              <tr>
-                <th>Size:</th>
-                <td>{fileMetadata?.size} bytes</td>
-              </tr>
-              <tr>
-                <th>Type:</th>
-                <td>{fileMetadata?.type}</td>
-              </tr>
-              <tr>
-                <th>Last Modified:</th>
-                <td>{fileMetadata?.lastModified}</td>
-              </tr>
-              <tr>
-                <th>ICC Profile:</th>
-                <td>{fileMetadata?.iccProfile ? 'Available' : 'None'}</td>
-              </tr>
-              <tr>
-                <th>ICC Profile Description:</th>
-                <td>{fileMetadata?.iccProfileDescription || 'None'}</td>
-              </tr>
-            </tbody>
-          </table>
-        </>
+          {selectedFile && (
+            <>
+              <button onClick={clearSelectedFile} className={styles.clearButton}>
+                Clear
+              </button>
+
+              {/* Check to avoid showing the table and the loading message at the same time */}
+              {!isMetadataLoading && fileMetadata && (
+                <table className={styles.metadataTable}>
+                  <tbody>
+                    <tr>
+                      <th>Name:</th>
+                      <td>{fileMetadata.name}</td>
+                    </tr>
+                    <tr>
+                      <th>Size:</th>
+                      <td>{fileMetadata.size} bytes</td>
+                    </tr>
+                    <tr>
+                      <th>Type:</th>
+                      <td>{fileMetadata.type}</td>
+                    </tr>
+                    <tr>
+                      <th>Last Modified:</th>
+                      <td>{fileMetadata.lastModified}</td>
+                    </tr>
+                    <tr>
+                      <th>ICC Profile:</th>
+                      <td>{fileMetadata.iccProfile ? 'Available' : 'None'}</td>
+                    </tr>
+                    <tr>
+                      <th>ICC Profile Description:</th>
+                      <td>{fileMetadata.iccProfileDescription || 'None'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              )}
+            </>
           )}
 
           <button onClick={convertToWebp} className={styles.convertButton} disabled={isLoading}>
