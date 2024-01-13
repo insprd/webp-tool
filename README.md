@@ -1,24 +1,41 @@
-Welcome to the NextJS base template bootstrapped using the `create-next-app`. This template supports TypeScript, but you can use normal JavaScript as well.
+# WebP Image Converter Application
+
+Welcome to the WebP Image Converter Application built with Next.js and TypeScript. This application allows users to convert their JPG and PNG images to the WebP format, which is known for providing superior lossless and lossy compression for web images.
+
+## Application Features
+
+- **File Upload**: Users can upload images in JPG or PNG formats either by dragging and dropping the file into the upload area or by clicking the upload area to select a file from their computer.
+- **Metadata Display**: Once an image is uploaded, the application displays the image's metadata including name, size, type, last modified date, and ICC profile (if available).
+- **Image Preview**: Users can preview the uploaded image before conversion.
+- **Conversion to WebP**: With a simple click, users can convert their uploaded image to the WebP format.
+- **Download**: After conversion, users can download the converted WebP image.
 
 ## Getting Started
 
-Hit the run button to start the development server.
+To get started, install the dependencies by running:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+`npm install`
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on `/api/hello`. This endpoint can be edited in `pages/api/hello.ts`.
+Then, you can start the development server by executing:
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+`npm run dev`
 
-## Learn More
+This will start the Next.js server on localhost with the default port 3000. You can then navigate to `http://localhost:3000` in your web browser to interact with the application.
 
-To learn more about Next.js, take a look at the following resources:
+## Building for Production
+To build the application for production, run:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+`npm run build`
 
-## Productionizing your Next App
+And to start the server with the production build, use:
 
-To make your next App run smoothly in production make sure to deploy your project with [Repl Deployments](https://docs.replit.com/hosting/deployments/about-deployments)!
+`npm run start`
 
-You can also produce a production build by running `npm run build` and [changing the run command](https://docs.replit.com/programming-ide/configuring-repl#run) to `npm run start`.
+## Deploying the Application
+To deploy your application, you can follow the Next.js deployment documentation [here](https://nextjs.org/docs/deployment).
+
+Alternatively, if you are developing on Replit, you can make use of (Replit Deployments to automatically build and deploy your application to the cloud)[https://docs.replit.com/hosting/deployments/about-deployments].
+
+Ensure your `.replit` configuration file is set up correctly to take advantage of Replit's deployment features.
+Happy converting!
+
