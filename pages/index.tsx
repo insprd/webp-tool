@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useRef, DragEvent } from "react";
 import { NextPage } from "next";
-import Head from "next/head";
+import SEOHead from "../components/SEOHead";
 import styles from "../styles/Home.module.css";
 
 interface FileMetadata {
@@ -153,9 +153,7 @@ const Home: NextPage = () => {
   // Render method
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Image Converter</title>
-      </Head>
+      <SEOHead />
       <main className={styles.main}>
         <h1 className={styles.title}>Lossless webp converter</h1>
         <div className={styles.uploadSection}>
