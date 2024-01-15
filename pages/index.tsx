@@ -84,7 +84,7 @@ const Home: NextPage = () => {
       // Create a preview URL for the selected file
       const previewUrl = URL.createObjectURL(imageFile);
       setImagePreview(previewUrl); // Save the preview URL in the state
-      
+
       setIsMetadataLoading(true); // Start loading metadata
       const iccData = await getIccProfile(file);
       const metadata: FileMetadata = {
@@ -182,7 +182,13 @@ const Home: NextPage = () => {
           {selectedFile && (
             <>
               <div className={styles.previewContainer}>
-                {imagePreview && <img src={imagePreview} alt="Preview" className={styles.imagePreview} />}
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className={styles.imagePreview}
+                  />
+                )}
               </div>
               <button
                 onClick={clearSelectedFile}
